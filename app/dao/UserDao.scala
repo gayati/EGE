@@ -13,6 +13,7 @@ import reactivemongo.play.json._
 import reactivemongo.bson.BSONDocument
 import javax.swing.text.StyledEditorKit.BoldAction
 import reactivemongo.api.commands.WriteResult
+import reactivemongo.api.Cursor
 
 @Singleton
 class UserDao @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit ec: ExecutionContext) extends IUserDao {
@@ -32,24 +33,37 @@ class UserDao @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit ec: Ex
   }
 
   override def updateUser(user: User): Future[Boolean] = {
-    if (user.email != "") {
+    if (user.email != "" && user.email.nonEmpty) {
       collection.flatMap(_.update(BSONDocument("id" -> user.id), BSONDocument("$set" -> BSONDocument("email" -> user.email))))
       Future { true }
     } else {
       Future { false }
     }
   }
-  
-  override def deleteUser(userId: Int): Future[WriteResult] = {
-    collection.flatMap(_.remove(BSONDocument("id" -> userId))) map { future => 
-     println("future     " + future)
-     future 
+
+  override def updateUserName(user: User): Future[Boolean] = {
+    if (user.name != "" && user.name.nonEmpty) {
+      collection.flatMap(_.update(BSONDocument("id" -> user.id), BSONDocument("$set" -> BSONDocument("name" -> user.name))))
+      Future { true }
+    } else {
+      Future { false }
     }
   }
 
-  //  override def getAllUsers(): Future[List[User]] = {
-  //    collection.flatMap(_.find(BSONDocument(), BSONDocument("_id" -> 0)
-  //  }
+  override def deleteUser(userId: Int): Future[WriteResult] = {
+    collection.flatMap(_.remove(BSONDocument("id" -> userId))) map { future =>
+      println("future     " + future)
+      future
+    }
+  }
 
+  override def getAllUsers(): Future[List[User]] = {
+    val query = BSONDocument()
+    collection.flatMap(_.find(query).cursor[User]().collect(10, Cursor.FailOnError[List[User]]())).map { userList =>
+      userList
+    }
+  }
+
+}
   
-} 
+  

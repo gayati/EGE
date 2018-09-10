@@ -29,10 +29,23 @@ class UserService @Inject() (userDao: IUserDao)(implicit ec: ExecutionContext) e
       updateFuture
     }
   }
-  
-  override def deleteUser(userId:Int):Future[WriteResult]={
-    userDao.deleteUser(userId) map { deleFuture =>
-      deleFuture 
+
+  override def updateUserName(user: User): Future[Boolean] = {
+    userDao.updateUser(user) map { updateFuture =>
+      updateFuture
     }
   }
+
+  override def deleteUser(userId: Int): Future[WriteResult] = {
+    userDao.deleteUser(userId) map { deleFuture =>
+      deleFuture
+    }
+  }
+
+  override def getAllUsers(): Future[List[User]] = {
+    userDao.getAllUsers() map { getuserFuture =>
+      getuserFuture
+    }
+  }
+
 }

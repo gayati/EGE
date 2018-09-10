@@ -11,5 +11,7 @@ trait IUserService {
   def addUser(user:User):Future[User]
   def getUserById(userId:Int):Future[Option[User]]
   def updateUser(user:User):Future[Boolean]
+  def updateUserName(user:User):Future[Boolean]
   def deleteUser(userId:Int):Future[WriteResult]
+  def getAllUsers():Future[List[User]]
 }
