@@ -5,6 +5,7 @@ import scala.concurrent.Future
 import model.User
 import model.UserDto
 import reactivemongo.api.commands.WriteResult
+import model.Limit
 
 @ImplementedBy(classOf[UserService])
 trait IUserService {
@@ -13,5 +14,5 @@ trait IUserService {
   def updateUser(user:User):Future[Boolean]
   def updateUserName(user:User):Future[Boolean]
   def deleteUser(userId:Int):Future[WriteResult]
-  def getAllUsers():Future[List[User]]
+  def getAllUsers(limitObj:Limit):Future[List[User]]
 }

@@ -12,7 +12,7 @@ trait IUserDao {
   def getUserById(userId: Int): Future[Option[User]]
   def updateUser(user:User): Future[Boolean]
   def updateUserName(user:User): Future[Boolean]
-  def getAllUsers():Future[List[User]]
+  def getAllUsers(limit:Int,offset:Int):Future[List[User]]
   def deleteUser(userId:Int):Future[WriteResult]
   
-}
+}  

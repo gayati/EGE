@@ -8,6 +8,7 @@ import javax.inject.Singleton
 import model.User
 import model.UserDto
 import reactivemongo.api.commands.WriteResult
+import model.Limit
 
 @Singleton
 class UserService @Inject() (userDao: IUserDao)(implicit ec: ExecutionContext) extends IUserService {
@@ -42,8 +43,8 @@ class UserService @Inject() (userDao: IUserDao)(implicit ec: ExecutionContext) e
     }
   }
 
-  override def getAllUsers(): Future[List[User]] = {
-    userDao.getAllUsers() map { getuserFuture =>
+  override def getAllUsers(limitObj:Limit): Future[List[User]] = {
+    userDao.getAllUsers(limitObj.limit,limitObj.offset) map { getuserFuture =>
       getuserFuture
     }
   }

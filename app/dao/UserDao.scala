@@ -10,13 +10,15 @@ import reactivemongo.api._
 import reactivemongo.play.json.collection.JSONCollection
 import play.api.libs.json.Json
 import reactivemongo.play.json._
-import reactivemongo.bson.BSONDocument
+import reactivemongo.bson._
 import javax.swing.text.StyledEditorKit.BoldAction
 import reactivemongo.api.commands.WriteResult
 import reactivemongo.api.Cursor
+import reactivemongo.api.collections.bson.BSONCollection
 
 @Singleton
-class UserDao @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit ec: ExecutionContext) extends IUserDao {
+class UserDao @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit ec: ExecutionContext) extends IUserDao
+  with ReactiveMongoComponents {
 
   def collection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("user"))
 
@@ -26,8 +28,9 @@ class UserDao @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit ec: Ex
   }
 
   override def getUserById(userId: Int): Future[Option[User]] = {
-    val query = BSONDocument("id" -> userId)
-    collection.flatMap(_.find(query).one[User]).map { user =>
+    val selector = BSONDocument("id" -> userId)
+    val projection = Option.empty[BSONDocument]
+    collection.flatMap(_.find(selector, projection).one[User]).map { user =>
       user
     }
   }
@@ -51,15 +54,15 @@ class UserDao @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit ec: Ex
   }
 
   override def deleteUser(userId: Int): Future[WriteResult] = {
-    collection.flatMap(_.remove(BSONDocument("id" -> userId))) map { future =>
+    collection.flatMap(_.delete().one(BSONDocument("id" -> userId))) map { future =>
       println("future     " + future)
       future
     }
   }
 
-  override def getAllUsers(): Future[List[User]] = {
+  override def getAllUsers(limit: Int, offset: Int): Future[List[User]] = {
     val query = BSONDocument()
-    collection.flatMap(_.find(query).cursor[User]().collect(10, Cursor.FailOnError[List[User]]())).map { userList =>
+    collection.flatMap(_.find(query).options(QueryOpts(offset)).cursor[User]().collect(limit, Cursor.FailOnError[List[User]]())).map { userList =>
       userList
     }
   }

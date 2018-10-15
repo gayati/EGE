@@ -13,16 +13,4 @@ case class User(
 object User {
   implicit val User = Json.format[User]
 }
-
-//object User {
-//  
-//   implicit object UserReader extends BSONDocumentReader[User] {
-//    def read(doc: BSONDocument): User = {
-//      val id = doc.getAs[Int]("id").get
-//      val name = doc.getAs[String]("name")
-//      val email = doc.getAs[String]("email")
-//
-//      User(id, name, email)
-//    }
-//  }
-//}
+  

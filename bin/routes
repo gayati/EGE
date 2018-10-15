@@ -11,7 +11,10 @@ POST     /saveUser             controllers.UserController.addUser()
 GET      /getUser/:userId      controllers.UserController.getUserById(userId: Int)
 POST     /updateUser           controllers.UserController.updateUser()
 DELETE   /deleteUser/:userId   controllers.UserController.deleteUser(userId: Int)
-GET      /getAllUsers          controllers.UserController.getAllUser()
+POST     /getAllUsers          controllers.UserController.getAllUser()
+POST     /uploadFile           controllers.UserController.upload
+GET      /serveUploadedFiles/*file controllers.UserController.serveUploadedFiles(file) 
+POST     /extract           controllers.UserController.extract()
 
 
 # Map static resources from the /public folder to the /assets URL path
